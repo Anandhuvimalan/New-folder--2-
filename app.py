@@ -271,8 +271,12 @@ def api_create_payment():
 
 @app.get("/api/payments")
 def api_list_payments():
-    code, data = sb_request("GET", "payments?select=id,amount_paid,paid_at,student_courses(id,students(register_number,student_name),courses(id,course_name))")
+    code, data = sb_request(
+        "GET",
+        "payments?select=id,student_course_id,amount_paid,paid_at&order=id.asc"
+    )
     return jsonify(data), code
+
 
 @app.put("/api/payments/<int:payment_id>")
 def api_update_payment(payment_id):
