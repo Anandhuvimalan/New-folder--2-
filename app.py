@@ -254,8 +254,12 @@ def api_create_enrollment():
 
 @app.get("/api/student_courses")
 def api_list_enrollments():
-    code, data = sb_request("GET", "student_courses?select=id,student_id,course_id,students(register_number,student_name),courses(id,course_name)")
+    code, data = sb_request(
+        "GET",
+        "student_courses?select=id,student_id,course_id&order=id.asc"
+    )
     return jsonify(data), code
+
 
 
 @app.delete("/api/student_courses/<int:enroll_id>")
