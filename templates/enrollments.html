@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Enrollments - Student Management{% endblock %}
+{% block content %}
+  <h2>Enrollment Management</h2>
+  
+  <div class="section">
+    <h3>Enroll Student in Course</h3>
+    <form method="post" action="{{ url_for('ui_create_enrollment') }}">
+      <label>Select Student</label>
+      <select name="student_id" required>
+        <option value="">-- Choose Student --</option>
+        {% for s in students %}
+          <option value="{{ s.register_number }}">{{ s.register_number }} - {{ s.student_name }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Select Course</label>
+      <select name="course_id" required>
+        <option value="">-- Choose Course --</option>
+        {% for c in courses %}
+          <option value="{{ c.id }}">{{ c.course_name }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit">Enroll Student</button>
+    </form>
+  </div>
+
+  <div class="section">
+    <h3>All Enrollments ({{ enrollments|length }} total)</h3>
+    <table>
+      <tr>
+        <th>Enrollment ID</th>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Total Payments</th>
+        <th>Actions</th>
+      </tr>
+      {% for e in enrollments %}
+        <tr>
+          <td>{{ e.id }}</td>
+          <td>
+            {% if e.students %}
+              {{ e.students.register_number }} - {{ e.students.student_name }}
+            {% else %}
+              Student ID: {{ e.student_id }}
+            {% endif %}
+          </td>
+          <td>
+            {% if e.courses %}
+              {{ e.courses.course_name }}
+            {% else %}
+              Course ID: {{ e.course_id }}
+            {% endif %}
+          </td>
+          <td>₹{{ e.total_paid|default(0) }}</td>
+          <td>
+            <form method="post" action="{{ url_for('ui_delete_enrollment', enroll_id=e.id) }}" style="display:inline;">
+              <button class="danger" type="submit" onclick="return confirm('Delete this enrollment? This will also delete related payments.')">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

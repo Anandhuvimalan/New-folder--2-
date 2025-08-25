@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Payments - Student Management{% endblock %}
+{% block content %}
+  <h2>Payment Management</h2>
+  
+  <div class="section">
+    <h3>Record New Payment</h3>
+    <form method="post" action="{{ url_for('ui_create_payment') }}">
+      <label>Select Enrollment</label>
+      <select name="student_course_id" required>
+        <option value="">-- Choose Enrollment --</option>
+        {% for e in enrollments %}
+          <option value="{{ e.id }}">
+            [ID: {{ e.id }}]
+            {% if e.students %}{{ e.students.student_name }}{% else %}Student {{ e.student_id }}{% endif %}
+            - 
+            {% if e.courses %}{{ e.courses.course_name }}{% else %}Course {{ e.course_id }}{% endif %}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label>Amount Paid</label>
+      <input type="number" name="amount_paid" min="0" required placeholder="Enter amount in rupees">
+
+      <button type="submit">Record Payment</button>
+    </form>
+  </div>
+
+  <div class="section">
+    <h3>All Payments ({{ payments|length }} total)</h3>
+    <table>
+      <tr>
+        <th>Payment ID</th>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Amount</th>
+        <th>Payment Date</th>
+        <th>Actions</th>
+      </tr>
+      {% for p in payments %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>
+            {% if p.student_courses and p.student_courses.students %}
+              {{ p.student_courses.students.student_name }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if p.student_courses and p.student_courses.courses %}
+              {{ p.student_courses.courses.course_name }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>₹{{ p.amount_paid }}</td>
+          <td>{{ p.paid_at[:10] if p.paid_at else '-' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('ui_delete_payment', payment_id=p.id) }}" style="display:inline;">
+              <button class="danger" type="submit" onclick="return confirm('Delete this payment record?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

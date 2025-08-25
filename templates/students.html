@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Students - Student Management{% endblock %}
+{% block content %}
+  <h2>Student Management</h2>
+  
+  <div class="section">
+    <h3>Add New Student</h3>
+    <form method="post" action="{{ url_for('ui_create_student') }}">
+      <label>Register Number (Primary Key)</label>
+      <input type="number" name="register_number" required>
+      <label>Student Name</label>
+      <input type="text" name="student_name" required>
+      <button type="submit">Add Student</button>
+    </form>
+  </div>
+
+  <div class="section">
+    <h3>All Students ({{ students|length }} total)</h3>
+    <table>
+      <tr>
+        <th>Register Number</th>
+        <th>Student Name</th>
+        <th>Enrollments</th>
+        <th>Actions</th>
+      </tr>
+      {% for s in students %}
+        <tr>
+          <td>{{ s.register_number }}</td>
+          <td>{{ s.student_name }}</td>
+          <td>{{ s.enrollment_count|default(0) }}</td>
+          <td>
+            <form method="post" action="{{ url_for('ui_delete_student', reg_no=s.register_number) }}" style="display:inline;">
+              <button class="danger" type="submit" onclick="return confirm('Delete student {{ s.student_name }}? This will also delete related enrollments and payments.')">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}
